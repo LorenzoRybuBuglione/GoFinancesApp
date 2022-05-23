@@ -1,6 +1,6 @@
 import React from "react";
 import { ThemeProvider } from "styled-components";
-import AppLoading from "expo-app-loading";
+// import * as SplashScreen from "expo-splash-screen";
 
 import {
   useFonts,
@@ -19,9 +19,9 @@ export default function App() {
     Poppins_700Bold,
   });
 
-  if (!fontsLoaded) {
-    return <AppLoading />;
-  }
+  // if (!fontsLoaded) {
+    
+  // }
 
   return (
     <ThemeProvider theme={theme}>
