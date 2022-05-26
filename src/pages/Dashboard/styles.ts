@@ -57,6 +57,10 @@ export const UserName = styled.Text`
   font-family: ${({ theme }) => theme.fonts.bold};
 `;
 
+export const LogoutButton = styled.TouchableOpacity.attrs({
+  activeOpacity: 0.7,
+})``;
+
 export const ExitIcon = styled(Feather)`
   color: ${({ theme }) => theme.colors.orange};
   font-size: ${RFValue(24)}px;
@@ -86,8 +90,16 @@ export const Transactions = styled.View`
 `;
 
 export const TransactionsCards = styled(
-  FlatList as new (props: FlatListProps<DataListProps>) => FlatList<DataListProps>
-  ).attrs({
+  FlatList as new (
+    props: FlatListProps<DataListProps>
+  ) => FlatList<DataListProps>
+).attrs({
   showsVerticalScrollIndicator: false,
   contentContainerStyle: { paddingBottom: getBottomSpace() },
 })``;
+
+export const LoadingContainer = styled.View`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+`;

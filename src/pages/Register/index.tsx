@@ -5,6 +5,10 @@ import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import uuid from "react-native-uuid";
+
 import { InputForm } from "../../components/Form/InputForm";
 import { Input } from "../../components/Form/Input";
 import { TransactionTypeButton } from "../../components/Form/TransactionTypeButton";
@@ -42,11 +46,20 @@ export function Register() {
   const [transactionType, setTransactionType] = useState("");
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
 
-  const { control, handleSubmit, formState: { errors } } = useForm({
+  const dataKey = "@gofinances:transactions";
+
+  const {
+    reset,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     resolver: yupResolver(schema),
   });
 
-  const handleTransactionTypeSelect = (type: "up" | "down") => {
+  const navigation = useNavigation();
+
+  const handleTransactionTypeSelect = (type: "positive" | "negative") => {
     setTransactionType(type);
   };
 
@@ -58,20 +71,40 @@ export function Register() {
     setCategoryModalOpen(false);
   };
 
-  const handleRegister = (form: FormData) => {
+  const handleRegister = async (form: FormData) => {
     if (!transactionType) return Alert.alert("Selecione o tipo da transação");
 
     if (category.key === "category")
       return Alert.alert("Selecione a categoria da transação");
 
-    const data = {
+    const newTransaction = {
+      id: String(uuid.v4()),
       name: form.name,
       amount: form.amount,
-      transactionType,
+      type: transactionType,
       category: category.key,
+      date: new Date(),
     };
 
-    console.log(data);
+    try {
+      const data = await AsyncStorage.getItem(dataKey);
+      const oldData = data ? JSON.parse(data) : [];
+
+      const newData = [...oldData, newTransaction];
+
+      await AsyncStorage.setItem(dataKey, JSON.stringify(newData));
+
+      reset();
+      setTransactionType("");
+      setCategory({
+        key: "category",
+        name: "Categoria",
+      });
+      navigation.navigate("Listagem");
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Não foi possível enviar");
+    }
   };
 
   return (
@@ -103,14 +136,14 @@ export function Register() {
               <TransactionTypeButton
                 type="up"
                 title="Entrada"
-                isActive={transactionType === "up"}
-                onPress={() => handleTransactionTypeSelect("up")}
+                isActive={transactionType === "positive"}
+                onPress={() => handleTransactionTypeSelect("positive")}
               />
               <TransactionTypeButton
                 type="down"
                 title="Saída"
-                isActive={transactionType === "down"}
-                onPress={() => handleTransactionTypeSelect("down")}
+                isActive={transactionType === "negative"}
+                onPress={() => handleTransactionTypeSelect("negative")}
               />
             </TransactionTypes>
             <CategorySelectButton
