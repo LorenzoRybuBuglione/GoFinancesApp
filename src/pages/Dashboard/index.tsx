@@ -10,7 +10,7 @@ import {
   TransactionCardProps,
 } from "../../components/TransactionCard";
 
-import { useAuth } from '../../hooks/auth'
+import { useAuth } from "../../hooks/auth";
 
 import {
   Container,
@@ -55,7 +55,7 @@ export function Dashboard() {
   const { user, signOut } = useAuth();
 
   async function loadTransactions() {
-    const dataKey = "@gofinances:transactions";
+    const dataKey = `@gofinances:transactions_user:${user.id}`;
     const response = await AsyncStorage.getItem(dataKey);
     const transactions = response ? JSON.parse(response) : [];
 
@@ -66,6 +66,14 @@ export function Dashboard() {
       collection: DataListProps[],
       type: "positive" | "negative"
     ) {
+      const collectionFiltered = collection.filter(
+        (transaction) => transaction.type === type
+      );
+
+      if (collectionFiltered.length === 0) {
+        return 0;
+      }
+
       const lastTransaction = new Date(
         Math.max.apply(
           Math,
@@ -121,7 +129,10 @@ export function Dashboard() {
       "negative"
     );
 
-    const interval = `01 à ${lastTransactionExpenses}`;
+    const interval =
+      lastTransactionExpenses === 0
+        ? "Não há transações"
+        : `01 à ${lastTransactionExpenses}`;
 
     const total = entriesTotal - expansesTotal;
 
@@ -131,14 +142,20 @@ export function Dashboard() {
           style: "currency",
           currency: "BRL",
         }),
-        lastTransactionDate: `Última entrada dia ${lastTransactionEntries}`,
+        lastTransactionDate:
+          lastTransactionEntries === 0
+            ? "Não há transações"
+            : `Última entrada dia ${lastTransactionEntries}`,
       },
       expenses: {
         amount: expansesTotal.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         }),
-        lastTransactionDate: `Última saída dia ${lastTransactionExpenses}`,
+        lastTransactionDate:
+          lastTransactionExpenses === 0
+            ? "Não há transações  "
+            : `Última saída dia ${lastTransactionExpenses}`,
       },
       total: {
         amount: total.toLocaleString("pt-BR", {
