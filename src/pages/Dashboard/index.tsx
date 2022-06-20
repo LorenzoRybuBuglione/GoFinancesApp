@@ -10,6 +10,8 @@ import {
   TransactionCardProps,
 } from "../../components/TransactionCard";
 
+import { useAuth } from '../../hooks/auth'
+
 import {
   Container,
   Header,
@@ -49,6 +51,8 @@ export function Dashboard() {
   const [highlightData, setHighlightData] = useState<HighlightData>(
     {} as HighlightData
   );
+
+  const { user, signOut } = useAuth();
 
   async function loadTransactions() {
     const dataKey = "@gofinances:transactions";
@@ -167,15 +171,15 @@ export function Dashboard() {
               <User>
                 <UserPhoto
                   source={{
-                    uri: "https://avatars.githubusercontent.com/u/55191240?v=4",
+                    uri: user.photo,
                   }}
                 ></UserPhoto>
                 <UserInfo>
                   <UserHello>Olá,</UserHello>
-                  <UserName>Lorenzo</UserName>
+                  <UserName>{user.name}</UserName>
                 </UserInfo>
               </User>
-              <LogoutButton onPress={() => {}}>
+              <LogoutButton onPress={signOut}>
                 <ExitIcon name="power" />
               </LogoutButton>
             </UserContainer>

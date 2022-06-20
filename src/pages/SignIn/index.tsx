@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
+import { Alert, ActivityIndicator } from "react-native";
 
 import GoogleSVG from "../../assets/google.svg";
 import LogoSVG from "../../assets/logo.svg";
 import { RFValue } from "react-native-responsive-fontsize";
+
+import { useTheme } from "styled-components";
 
 import { useAuth } from "../../hooks/auth";
 
@@ -19,9 +22,22 @@ import {
 } from "./styles";
 
 export function SignIn() {
-  const { user } = useAuth();
-  console.log(user);
-  
+  const [isLoading, setIsLoading] = useState(false);
+  const { signInWithGoogle } = useAuth();
+
+  const theme = useTheme();
+
+  async function hadleSignInWithGoogle() {
+    try {
+      setIsLoading(true);
+      return await signInWithGoogle();
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Não foi possível conectar a conta Google");
+      setIsLoading(false);
+    }
+  }
+
   return (
     <Container>
       <Header>
@@ -45,8 +61,19 @@ export function SignIn() {
       </Header>
       <Footer>
         <FooterWrapper>
-          <SignInButton title="Entrar com Google" svg={GoogleSVG} />
+          <SignInButton
+            title="Entrar com Google"
+            svg={GoogleSVG}
+            onPress={hadleSignInWithGoogle}
+          />
         </FooterWrapper>
+        {isLoading && (
+          <ActivityIndicator
+            color={theme.colors.shape}
+            size={30}
+            style={{ marginTop: 18 }}
+          />
+        )}
       </Footer>
     </Container>
   );
