@@ -4,6 +4,7 @@ import GoogleSVG from "../../assets/google.svg";
 import LogoSVG from "../../assets/logo.svg";
 import { RFValue } from "react-native-responsive-fontsize";
 
+import { useAuth } from "../../hooks/auth";
 
 import { SignInButton } from "../../components/SignInButton";
 
@@ -18,6 +19,9 @@ import {
 } from "./styles";
 
 export function SignIn() {
+  const { user } = useAuth();
+  console.log(user);
+  
   return (
     <Container>
       <Header>
